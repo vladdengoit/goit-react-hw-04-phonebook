@@ -1,0 +1,35 @@
+.baseForm {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  width: 300px;
+  padding: 10px;
+  border: 2px solid black;
+  margin: 5px;
+  background-color: lightgreen;
+}
+.button {
+  width: 100px;
+  padding: 5px;
+  margin: 10px;
+  font-size: 10px;
+  font-weight: bold;
+  padding-left: 0px;
+  margin-left: 0px;
+  background-color: lightblue;
+}
+.input {
+  padding: 5px;
+  margin: 10px;
+  font-size: 10px;
+  font-weight: bold;
+}
+.inputtitle {
+  width: 12%;
+  border: 2px solid black;
+  padding: 10px;
+  margin: 10px;
+  font-size: 14px;
+  font-weight: bold;
+  background-color: lightblue;
+}
