@@ -1,82 +1,147 @@
-import { Component } from 'react';
+import { useState, useEffect } from 'react';
 import FormPhonebook from './FormPhoneBook/FormPhoneBook';
 import Contact from './Contact/Contact';
 import Filter from './Filter/Filter';
 import { nanoid } from 'nanoid';
-class App extends Component {
-  state = {
-    contacts: [],
-    filter: '',
-  };
 
-  checkName(data) {
-    const normalizedDataName = data.name.toLowerCase();
-    const { contacts } = this.state;
+const App = () => {
+  const [contacts, setContacts] = useState(() => {
+    const dataStotage = JSON.parse(localStorage.getItem('myContacts'));
+    return dataStotage || [];
+  });
 
-    const checkContact = contacts.find(el => {
-      const normalizedCurrentName = el.name.toLowerCase();
-      return normalizedDataName === normalizedCurrentName;
-    });
-    console.log(checkContact);
-    return Boolean(checkContact);
-  }
+  useEffect(() => {
+    console.log('useEffect -works');
+    localStorage.setItem('myContacts', JSON.stringify(contacts));
+  }, [contacts]);
 
-  handlerFormSPhonebook = data => {
-    console.log(this.checkName(data));
-    if (this.checkName(data)) {
+  const [filter, setFilter] = useState('');
+
+  const handlerFormSPhonebook = data => {
+    if (checkName(data)) {
       return alert(`${data.name} is already in the list of contacts`);
     }
-
-    this.setState(({ contacts }) => {
+    setContacts(prevContacts => {
       const newContact = {
         id: nanoid(),
         ...data,
       };
-      return {
-        contacts: [...contacts, newContact],
-      };
+      return [...prevContacts, newContact];
     });
   };
 
-  deleteContact = id => {
-    console.log(id);
-    this.setState(({ contacts }) => {
-      const filtercontacts = contacts.filter(el => el.id !== id);
-      return {
-        contacts: filtercontacts,
-      };
+  const checkName = data => {
+    const normalizedDataName = data.name.toLowerCase();
+    const checkContact = contacts.find(el => {
+      const normalizedCurrentName = el.name.toLowerCase();
+      return normalizedDataName === normalizedCurrentName;
     });
-  };
-  propsFilter = ({ target }) => {
-    this.setState({
-      filter: target.value,
-    });
+    return Boolean(checkContact);
   };
 
-  filterContacts() {
-    const { filter, contacts } = this.state;
+  const deleteContact = id => {
+    setContacts(prevContacts => prevContacts.filter(el => el.id !== id));
+  };
+
+  const propsFilter = ({ target }) => setFilter(target.value);
+
+  const filterContacts = () => {
     if (!filter) {
       return contacts;
     }
     const filterNormalize = filter.toLowerCase();
-    const filteredContacts =contacts.filter(el => {
+    const filteredContacts = contacts.filter(el => {
       const checkedEl = el.name.toLowerCase();
       return checkedEl.includes(filterNormalize);
     });
-    return filteredContacts
-  }
+    return filteredContacts;
+  };
 
-  render() {
-    const contacts = this.filterContacts();
-    return (
-      <>
-        <FormPhonebook handlerFormSPhonebook={this.handlerFormSPhonebook} />
+  const contactsAfterfilter = filterContacts();
 
-        <Contact contacts={contacts} deleteContact={this.deleteContact} />
+  return (
+    <>
+      <FormPhonebook handlerFormSPhonebook={handlerFormSPhonebook} />
+      <Contact contacts={contactsAfterfilter} deleteContact={deleteContact} />
+      <Filter propsFilter={propsFilter} />
+    </>
+  );
+};
 
-        <Filter propsFilter={this.propsFilter} />
-      </>
-    );
-  }
-}
+// class App extends Component {
+//   state = {
+//     contacts: [],
+//     filter: '',
+//   };
+
+//   checkName(data) {
+//     const normalizedDataName = data.name.toLowerCase();
+//     const { contacts } = this.state;
+
+//     const checkContact = contacts.find(el => {
+//       const normalizedCurrentName = el.name.toLowerCase();
+//       return normalizedDataName === normalizedCurrentName;
+//     });
+//     console.log(checkContact);
+//     return Boolean(checkContact);
+//   }
+
+//   handlerFormSPhonebook = data => {
+//     console.log(this.checkName(data));
+//     if (this.checkName(data)) {
+//       return alert(`${data.name} is already in the list of contacts`);
+//     }
+
+//     this.setState(({ contacts }) => {
+//       const newContact = {
+//         id: nanoid(),
+//         ...data,
+//       };
+//       return {
+//         contacts: [...contacts, newContact],
+//       };
+//     });
+//   };
+
+//   deleteContact = id => {
+//     console.log(id);
+//     this.setState(({ contacts }) => {
+//       const filtercontacts = contacts.filter(el => el.id !== id);
+//       return {
+//         contacts: filtercontacts,
+//       };
+//     });
+//   };
+//   propsFilter = ({ target }) => {
+//     this.setState({
+//       filter: target.value,
+//     });
+//   };
+
+//   filterContacts() {
+//     const { filter, contacts } = this.state;
+//     if (!filter) {
+//       return contacts;
+//     }
+//     const filterNormalize = filter.toLowerCase();
+//     const filteredContacts = contacts.filter(el => {
+//       const checkedEl = el.name.toLowerCase();
+//       return checkedEl.includes(filterNormalize);
+//     });
+//     return filteredContacts;
+//   }
+
+//   render() {
+//     const contacts = this.filterContacts();
+//     return (
+//       <>
+//         <FormPhonebook handlerFormSPhonebook={this.handlerFormSPhonebook} />
+
+//         <Contact contacts={contacts} deleteContact={this.deleteContact} />
+
+//         <Filter propsFilter={this.propsFilter} />
+//       </>
+//     );
+//   }
+// }
 export default App;
